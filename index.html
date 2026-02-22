@@ -208,7 +208,11 @@
     const urlParams = new URLSearchParams(window.location.search);
     const viewId = urlParams.get('id');
     
+    console.log('viewId:', viewId);
+    console.log('SUPABASE_URL:', SUPABASE_URL);
+    
     if (viewId) {
+      console.log('Loading paste:', viewId);
       document.getElementById('createView').classList.remove('visible');
       document.getElementById('viewView').classList.add('visible');
       
