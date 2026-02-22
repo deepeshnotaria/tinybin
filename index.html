@@ -216,12 +216,13 @@
       }
     }
     
-    // Show debug info on page
-    document.body.innerHTML = '<div style="padding:20px;font-family:monospace;">' +
-      'viewId: ' + viewId + '<br>' +
-      'hash: ' + window.location.hash + '<br>' +
-      'search: ' + window.location.search + '<br>' +
-      '</div>';
+    if (viewId) {
+      // Show debug info on page
+      document.body.innerHTML = '<div style="padding:20px;font-family:monospace;">' +
+        'viewId: ' + viewId + '<br>' +
+        'hash: ' + window.location.hash + '<br>' +
+        'search: ' + window.location.search + '<br>' +
+        '</div>';
       console.log('Loading paste:', viewId);
       document.getElementById('createView').classList.remove('visible');
       document.getElementById('viewView').classList.add('visible');
