@@ -210,16 +210,18 @@
     // Check for ID in URL (support both query params and hash)
     let viewId = new URLSearchParams(window.location.search).get('id');
     if (!viewId) {
-      // Try hash-based routing (e.g., #id=test123)
       const hash = window.location.hash;
       if (hash && hash.startsWith('#id=')) {
         viewId = hash.substring(4);
       }
     }
     
-    alert('viewId=' + viewId + ' hash=' + window.location.hash);
-    
-    if (viewId) {
+    // Show debug info on page
+    document.body.innerHTML = '<div style="padding:20px;font-family:monospace;">' +
+      'viewId: ' + viewId + '<br>' +
+      'hash: ' + window.location.hash + '<br>' +
+      'search: ' + window.location.search + '<br>' +
+      '</div>';
       console.log('Loading paste:', viewId);
       document.getElementById('createView').classList.remove('visible');
       document.getElementById('viewView').classList.add('visible');
