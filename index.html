@@ -24,37 +24,33 @@
     input[type="password"] { width: 100%; padding: 14px; background: #0d1117; border: 1px solid #30363d; border-radius: 8px; color: #e6edf3; font-size: 1rem; margin: 16px 0; }
     input[type="password"]:focus { outline: none; border-color: #58a6ff; }
     .optional-label { color: #8b949e; font-size: 0.875rem; margin-bottom: 8px; display: block; }
-    .btn { width: 100%; padding: 16px; background: linear-gradient(135deg, #238636, #2ea043); border: none; border-radius: 8px; color: white; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
-    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(46, 160, 67, 0.3); }
+    .btn { width: 100%; padding: 16px; background: linear-gradient(135deg, #238636, #2ea043); border: none; border-radius: 8px; color: white; font-size: 1.1rem; font-weight: 600; cursor: pointer; }
+    .btn:hover { opacity: 0.9; }
     .result { margin-top: 24px; padding: 20px; background: #21262d; border-radius: 8px; display: none; }
     .result.visible { display: block; }
     .result-label { color: #8b949e; font-size: 0.875rem; margin-bottom: 8px; }
     .result-url { word-break: break-all; color: #58a6ff; font-family: 'SF Mono', Monaco, monospace; padding: 12px; background: #0d1117; border-radius: 6px; }
     .copy-btn { margin-top: 12px; padding: 10px 20px; background: #30363d; border: none; border-radius: 6px; color: #e6edf3; cursor: pointer; }
-    .copy-btn:hover { background: #3d444d; }
     .view-section { display: none; }
     .view-section.visible { display: block; }
     .password-prompt { text-align: center; }
     .password-prompt input { text-align: center; }
     .error { color: #f85149; text-align: center; margin-top: 12px; }
-    .content-display { background: #0d1117; padding: 20px; border-radius: 8px; margin-top: 16px; white-space: pre-wrap; word-break: break-word; }
+    .content-display { background: #0d1117; padding: 20px; border-radius: 8px; margin-top: 16px; white-space: pre-wrap; }
     .content-display img { max-width: 100%; border-radius: 8px; }
-    .footer { margin-top: 40px; color: #8b949e; text-align: center; font-size: 0.875rem; }
+    .footer { margin-top: 40px; color: #8b949e; text-align: center; }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>🔗 TinyBin</h1>
-    
     <div id="createView" class="view-section visible">
       <div class="tabs">
         <button class="tab active" data-tab="text">Text</button>
         <button class="tab" data-tab="image">Image</button>
       </div>
-      
       <div class="card">
         <textarea id="content" placeholder="Paste your text here..."></textarea>
-        
         <div class="file-input-wrapper" id="imageInput" style="display: none;">
           <label class="file-btn">
             📷 Choose Image
@@ -62,20 +58,16 @@
           </label>
           <img id="filePreview" class="file-preview">
         </div>
-        
         <span class="optional-label">Password (optional)</span>
         <input type="password" id="password" placeholder="Enter password to protect">
-        
         <button class="btn" id="submitBtn">🔗 Create Link</button>
       </div>
-      
       <div class="result" id="result">
         <div class="result-label">Your shareable link:</div>
         <div class="result-url" id="resultUrl"></div>
         <button class="copy-btn" id="copyBtn">📋 Copy</button>
       </div>
     </div>
-    
     <div id="viewView" class="view-section">
       <div class="card">
         <div id="passwordPrompt" class="password-prompt" style="display: none;">
@@ -84,26 +76,19 @@
           <button class="btn" id="unlockBtn">Unlock</button>
           <p class="error" id="viewError"></p>
         </div>
-        
         <div id="contentDisplay"></div>
       </div>
     </div>
   </div>
-  
-  <div class="footer">
-    Made with ❤️ | Your content, simply shared
-  </div>
+  <div class="footer">Made with ❤️ | Your content, simply shared</div>
 
   <script>
     const SUPABASE_URL = 'https://vxhfsaelaouburxutwyb.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ4aGZzYWVsYW91YnVyeHV0d3liIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3OTE5NTAsImV4cCI6MjA4NzM2Nzk1MH0.8jf52xzPRU3PEMj3rKqGDll7xIkHK6snkR0zzjU3eYw';
-    
-    // Debug: immediately show alert
-    alert('TinyBin JS loaded! ' + window.location.href);
-    
+
     let selectedTab = 'text';
     let selectedFile = null;
-    
+
     // Tab switching
     document.querySelectorAll('.tab').forEach(tab => {
       tab.addEventListener('click', () => {
@@ -116,7 +101,7 @@
         else document.getElementById('content').style.height = '200px';
       });
     });
-    
+
     // File selection
     document.getElementById('fileInput').addEventListener('change', (e) => {
       const file = e.target.files[0];
@@ -130,8 +115,8 @@
         reader.readAsDataURL(file);
       }
     });
-    
-    // Simple hash function
+
+    // Hash password
     async function hashPassword(password) {
       const encoder = new TextEncoder();
       const data = encoder.encode(password);
@@ -139,7 +124,7 @@
       const hashArray = Array.from(new Uint8Array(hashBuffer));
       return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
     }
-    
+
     // Generate short ID
     function generateId() {
       const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -147,22 +132,21 @@
       for (let i = 0; i < 8; i++) id += chars[Math.floor(Math.random() * chars.length)];
       return id;
     }
-    
+
     // Create paste
     document.getElementById('submitBtn').addEventListener('click', async () => {
       const content = document.getElementById('content').value;
       const password = document.getElementById('password').value;
-      
+
       if (!content && !selectedFile) {
         alert('Please enter some content or select an image');
         return;
       }
-      
+
       const id = generateId();
       let contentData = content;
       let contentType = selectedTab;
-      
-      // Convert image to base64 if selected
+
       if (selectedFile) {
         contentData = await new Promise(resolve => {
           const reader = new FileReader();
@@ -171,121 +155,97 @@
         });
         contentType = 'image';
       }
-      
+
       const passwordHash = password ? await hashPassword(password) : null;
-      
-      const { error } = await fetch(`${SUPABASE_URL}/rest/v1/pastes`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': SUPABASE_KEY,
-          'Authorization': `Bearer ${SUPABASE_KEY}`,
-          'Prefer': 'return=minimal'
-        },
-        body: JSON.stringify({
-          id,
-          content: contentData,
-          content_type: contentType,
-          password_hash: passwordHash
-        })
-      });
-      
-      if (error) {
-        alert('Error saving: ' + JSON.stringify(error));
-        return;
+
+      try {
+        const response = await fetch(SUPABASE_URL + '/rest/v1/pastes', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': SUPABASE_KEY,
+            'Authorization': 'Bearer ' + SUPABASE_KEY,
+            'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify({
+            id: id,
+            content: contentData,
+            content_type: contentType,
+            password_hash: passwordHash
+          })
+        });
+
+        if (!response.ok) {
+          const err = await response.text();
+          alert('Error saving: ' + err);
+          return;
+        }
+
+        const url = window.location.origin + window.location.pathname + '#' + id;
+        document.getElementById('resultUrl').textContent = url;
+        document.getElementById('result').classList.add('visible');
+      } catch (e) {
+        alert('Error: ' + e.message);
       }
-      
-      const url = `${window.location.origin}${window.location.pathname}#id=${id}`;
-      document.getElementById('resultUrl').textContent = url;
-      document.getElementById('result').classList.add('visible');
     });
-    
+
     // Copy button
     document.getElementById('copyBtn').addEventListener('click', () => {
       navigator.clipboard.writeText(document.getElementById('resultUrl').textContent);
       document.getElementById('copyBtn').textContent = '✅ Copied!';
       setTimeout(() => document.getElementById('copyBtn').textContent = '📋 Copy', 2000);
     });
-    
-    // Check for ID in URL (support both query params and hash)
-    let viewId = new URLSearchParams(window.location.search).get('id');
-    if (!viewId) {
-      const hash = window.location.hash;
-      if (hash && hash.startsWith('#id=')) {
-        viewId = hash.substring(4);
-      }
-    }
-    
-    if (viewId) {
-      // Show debug info on page
-      document.body.innerHTML = '<div style="padding:20px;font-family:monospace;">' +
-        'viewId: ' + viewId + '<br>' +
-        'hash: ' + window.location.hash + '<br>' +
-        'search: ' + window.location.search + '<br>' +
-        '</div>';
-      console.log('Loading paste:', viewId);
+
+    // View paste
+    const hash = window.location.hash.substring(1);
+    if (hash) {
       document.getElementById('createView').classList.remove('visible');
       document.getElementById('viewView').classList.add('visible');
       document.getElementById('contentDisplay').innerHTML = '<p style="text-align:center;color:#8b949e;">Loading...</p>';
-      
-      async function loadPaste() {
-        try {
-          const response = await fetch(`${SUPABASE_URL}/rest/v1/pastes?id=eq.${viewId}`, {
-            headers: {
-              'apikey': SUPABASE_KEY,
-              'Authorization': `Bearer ${SUPABASE_KEY}`,
-              'Content-Type': 'application/json'
-            }
-          });
-          const data = await response.json();
-          if (!response.ok) {
-            document.getElementById('contentDisplay').innerHTML = '<p style="color: #f85149; text-align: center;">API Error: ' + JSON.stringify(data) + '</p>';
-            return;
-          }
-        
+
+      fetch(SUPABASE_URL + '/rest/v1/pastes?id=eq.' + hash, {
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': 'Bearer ' + SUPABASE_KEY
+        }
+      })
+      .then(r => r.json())
+      .then(data => {
         if (!data || data.length === 0) {
-          document.getElementById('contentDisplay').innerHTML = '<p style="color: #f85149; text-align: center;">Paste not found</p>';
+          document.getElementById('contentDisplay').innerHTML = '<p style="color:#f85149;text-align:center;">Paste not found</p>';
           return;
         }
-        
         const paste = data[0];
-        
         if (paste.password_hash) {
           document.getElementById('passwordPrompt').style.display = 'block';
-          
-          document.getElementById('unlockBtn').addEventListener('click', async () => {
+          document.getElementById('unlockBtn').onclick = async () => {
             const password = document.getElementById('viewPassword').value;
-            const hash = await hashPassword(password);
-            
-            if (hash !== paste.password_hash) {
+            const hashVal = await hashPassword(password);
+            if (hashVal !== paste.password_hash) {
               document.getElementById('viewError').textContent = 'Incorrect password';
               return;
             }
-            
             showContent(paste);
-          });
+          };
         } else {
           showContent(paste);
         }
-      }
-      
-      function showContent(paste) {
-        document.getElementById('passwordPrompt').style.display = 'none';
-        
-        if (paste.content_type === 'image') {
-          document.getElementById('contentDisplay').innerHTML = `<img src="${paste.content}" alt="Shared image">`;
-        } else {
-          document.getElementById('contentDisplay').innerHTML = `<div class="content-display">${escapeHtml(paste.content)}</div>`;
-        }
-      }
-      
-      function escapeHtml(text) {
+      })
+      .catch(e => {
+        document.getElementById('contentDisplay').innerHTML = '<p style="color:#f85149;text-align:center;">Error: ' + e.message + '</p>';
+      });
+    }
+
+    function showContent(paste) {
+      document.getElementById('passwordPrompt').style.display = 'none';
+      if (paste.content_type === 'image') {
+        document.getElementById('contentDisplay').innerHTML = '<img src="' + paste.content + '" alt="Shared image">';
+      } else {
         const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
+        div.textContent = paste.content;
+        document.getElementById('contentDisplay').innerHTML = '';
+        document.getElementById('contentDisplay').appendChild(div);
       }
-      
-      loadPaste();
     }
   </script>
 </body>
