@@ -213,13 +213,19 @@
       document.getElementById('viewView').classList.add('visible');
       
       async function loadPaste() {
-        const response = await fetch(`${SUPABASE_URL}/rest/v1/pastes?id=eq.${viewId}`, {
-          headers: {
-            'apikey': SUPABASE_KEY,
-            'Authorization': `Bearer ${SUPABASE_KEY}`
+        try {
+          const response = await fetch(`${SUPABASE_URL}/rest/v1/pastes?id=eq.${viewId}`, {
+            headers: {
+              'apikey': SUPABASE_KEY,
+              'Authorization': `Bearer ${SUPABASE_KEY}`,
+              'Content-Type': 'application/json'
+            }
+          });
+          const data = await response.json();
+          if (!response.ok) {
+            document.getElementById('contentDisplay').innerHTML = '<p style="color: #f85149; text-align: center;">API Error: ' + JSON.stringify(data) + '</p>';
+            return;
           }
-        });
-        const data = await response.json();
         
         if (!data || data.length === 0) {
           document.getElementById('contentDisplay').innerHTML = '<p style="color: #f85149; text-align: center;">Paste not found</p>';
