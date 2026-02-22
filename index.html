@@ -192,7 +192,7 @@
         return;
       }
       
-      const url = `${window.location.origin}${window.location.pathname}?id=${id}`;
+      const url = `${window.location.origin}${window.location.pathname}#id=${id}`;
       document.getElementById('resultUrl').textContent = url;
       document.getElementById('result').classList.add('visible');
     });
@@ -204,9 +204,15 @@
       setTimeout(() => document.getElementById('copyBtn').textContent = '📋 Copy', 2000);
     });
     
-    // Check for ID in URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const viewId = urlParams.get('id');
+    // Check for ID in URL (support both query params and hash)
+    let viewId = new URLSearchParams(window.location.search).get('id');
+    if (!viewId) {
+      // Try hash-based routing (e.g., #id=test123)
+      const hash = window.location.hash;
+      if (hash && hash.startsWith('#id=')) {
+        viewId = hash.substring(4);
+      }
+    }
     
     console.log('viewId:', viewId);
     console.log('SUPABASE_URL:', SUPABASE_URL);
